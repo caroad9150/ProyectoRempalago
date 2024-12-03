@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Procedimientos</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID Eje</th>
+            <th>ID Área</th>
+            <th>ID Dependencia</th>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in procedimientos %}
+        <tr>
+            <td>{{ p.idEje }}</td>
+            <td>{{ p.idArea }}</td>
+            <td>{{ p.idDependencia }}</td>
+            <td>{{ p.nombreProcedimiento }}</td>
+            <td>{{ p.estado }}</td>
+            <td>
+                <form action="/delete/{{ p.idEje }}" method="POST">
+                    <button class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h2>Agregar Procedimiento</h2>
+<form action="/add" method="POST">
+    <input type="text" name="idEje" placeholder="ID Eje" required>
+    <input type="text" name="idArea" placeholder="ID Área" required>
+    <input type="text" name="idDependencia" placeholder="ID Dependencia" required>
+    <input type="text" name="nombreProcedimiento" placeholder="Nombre Procedimiento" required>
+    <button class="btn btn-primary">Agregar</button>
+</form>
+{% endblock %}
