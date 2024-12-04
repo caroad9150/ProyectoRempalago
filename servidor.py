@@ -276,6 +276,60 @@ def delete_macroprocesos(idMacroproceso):
     return redirect(url_for('index'))
 
 
+###ejes
+# Ruta para listar los registros de eje_estrategico
+@app.route('/eje_estrategico')
+def eje_estrategico():
+    conn = get_db_connection()
+    eje_estrategicos = conn.execute('SELECT * FROM eje_estrategico').fetchall()
+    conn.close()
+    return render_template('eje_estrategico.html', eje_estrategicos=eje_estrategicos)
+ 
+# Ruta para crear un nuevo registro en eje_estrategico
+@app.route('/create_eje_estrategico', methods=('GET', 'POST'))
+def create_eje_estrategico():
+    if request.method == 'POST':
+        data = {key: request.form[key] for key in request.form}
+        conn = get_db_connection()
+        query = """
+            INSERT INTO eje_estrategico (idEje, nombreEjeEstrategico)
+            VALUES (?, ?)
+        """
+        conn.execute(query, tuple(data.values()))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('eje_estrategico'))
+    return render_template('create_eje_estrategico.html')
+ 
+# Ruta para actualizar un registro de eje_estrategico
+@app.route('/edit_eje_estrategico/<string:idEje>', methods=('GET', 'POST'))
+def edit_eje_estrategico(idEje):
+    conn = get_db_connection()
+    eje_estrategico = conn.execute('SELECT * FROM eje_estrategico WHERE idEje = ?', (idEje,)).fetchone()
+ 
+    if request.method == 'POST':
+        data = {key: request.form[key] for key in request.form}
+        query = """
+            UPDATE eje_estrategico SET 
+            idEje = ?, nombreEjeEstrategico = ?
+            WHERE idEje = ?
+        """
+        conn.execute(query, (*data.values(), idEje))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('eje_estrategico'))
+ 
+    conn.close()
+    return render_template('edit_eje_estrategico.html', eje_estrategico=eje_estrategico)
+ 
+# Ruta para eliminar un registro de eje_estrategico
+@app.route('/delete_eje_estrategico/<string:idEje>', methods=('POST',))
+def delete_eje_estrategico(idEje):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM eje_estrategico WHERE idEje = ?', (idEje,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('eje_estrategico'))
 
 
 
