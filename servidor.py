@@ -4,24 +4,55 @@ import json  # Para serializar distribuciones correctamente
 
 app = Flask(__name__)
 
-DATABASE_CONFIG = {
-    'driver': '{ODBC Driver 17 for SQL Server}',
-    'server': 'tiusr3pl.cuc-carrera-ti.ac.cr',
-    'database': 'proyetoR',
-    'username': 'sitios',
-    'password': 'SitiosC32024'
-}
+# DATABASE_CONFIG = {
+#     'driver': '{ODBC Driver 17 for SQL Server}',
+#     'server': 'tiusr3pl.cuc-carrera-ti.ac.cr',
+#     'database': 'proyetoR',
+#     'username': 'sitios',
+#     'password': 'SitiosC32024'
+# }
 
-def get_db_connection():
-    connection_string = (
-        f"DRIVER={DATABASE_CONFIG['driver']};"
-        f"SERVER={DATABASE_CONFIG['server']};"
-        f"DATABASE={DATABASE_CONFIG['database']};"
-        f"UID={DATABASE_CONFIG['username']};"
-        f"PWD={DATABASE_CONFIG['password']};"
-        f"Timeout=30;"
-    )
+# def get_db_connection():
+#     connection_string = (
+#         f"DRIVER={DATABASE_CONFIG['driver']};"
+#         f"SERVER={DATABASE_CONFIG['server']};"
+#         f"DATABASE={DATABASE_CONFIG['database']};"
+#         f"UID={DATABASE_CONFIG['username']};"
+#         f"PWD={DATABASE_CONFIG['password']};"
+#         f"Timeout=30;"
+#     )
+#     return pyodbc.connect(connection_string)
+
+##local 
+def get_db_connection(config):
+    """
+    Genera una conexión a la base de datos basada en la configuración proporcionada.
+
+    :param config: Diccionario con la configuración de la base de datos.
+    :return: Conexión a la base de datos.
+    """
+    if config['username'] and config['password']:
+        # Con credenciales
+        connection_string = (
+            f"DRIVER={config['driver']};"
+            f"SERVER={config['server']};"
+            f"DATABASE={config['database']};"
+            f"UID={config['username']};"
+            f"PWD={config['password']};"
+            f"Timeout=30;"
+        )
+    else:
+        # Con Trusted_Connection
+        connection_string = (
+            f"DRIVER={config['driver']};"
+            f"SERVER={config['server']};"
+            f"DATABASE={config['database']};"
+            f"Trusted_Connection=yes;"
+            f"Timeout=30;"
+        )
+    
     return pyodbc.connect(connection_string)
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -83,35 +114,6 @@ def index():
     except Exception as e:
         return f"Error al conectar con la base de datos: {e}"
 
-# Ruta para listar los registros
-@app.route('/procedimientos')
-def procedimientos():
-    conn = get_db_connection()
-    procedimientos = conn.execute('SELECT * FROM Procedimientos').fetchall()
-    conn.close()
-    return render_template('procedimientos.html', procedimientos=procedimientos)
-
-# Ruta para crear un nuevo registro
-@app.route('/create', methods=('GET', 'POST'))
-def create():
-    if request.method == 'POST':
-        data = {key: request.form[key] for key in request.form}
-        conn = get_db_connection()
-        query = """
-            INSERT INTO Procedimientos (idEje, idArea, idDependencia, tipoProcedimiento, estado, teletrabajado,
-            idMacroproceso, idEjeEstrategico, tipoDocumento, nombreProcedimiento, apoyoTecnologico, anioActualizacion)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """
-        conn.execute(query, tuple(data.values()))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('index'))
-    return render_template('create.html')
-
-# Ruta para actualizar un registro
-@app.route('/edit/<string:idEje>', methods=('GET', 'POST'))
-def edit(idEje):
-    conn = get_db_connection()
 # Ruta para listar los registros
 @app.route('/procedimientos')
 def procedimientos():
@@ -276,6 +278,7 @@ def delete_macroprocesos(idMacroproceso):
     return redirect(url_for('index'))
 
 
+
 ###ejes
 # Ruta para listar los registros de eje_estrategico
 @app.route('/eje_estrategico')
@@ -332,7 +335,58 @@ def delete_eje_estrategico(idEje):
     return redirect(url_for('eje_estrategico'))
 
 
-
+@app.route('/dependencia')
+def dependencia():
+    conn = get_db_connection()
+    dependencias = conn.execute('SELECT * FROM dependencia').fetchall()
+    conn.close()
+    return render_template('dependencia.html', procedimientos=procedimientos)
+ 
+# Ruta para crear un nuevo registro en dependencia
+@app.route('/create_dependencia', methods=('GET', 'POST'))
+def create_dependencia():
+    if request.method == 'POST':
+        data = {key: request.form[key] for key in request.form}
+        conn = get_db_connection()
+        query = """
+            INSERT INTO dependencia (idDependencia, nombreDependencia)
+            VALUES (?, ?)
+        """
+        conn.execute(query, tuple(data.values()))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('dependencia'))
+    return render_template('create_dependencia.html')
+ 
+# Ruta para actualizar un registro de dependencia
+@app.route('/edit_dependencia/<string:idDependencia>', methods=('GET', 'POST'))
+def edit_dependencia(idDependencia):
+    conn = get_db_connection()
+    dependencia = conn.execute('SELECT * FROM dependencia WHERE idDependencia = ?', (idDependencia,)).fetchone()
+ 
+    if request.method == 'POST':
+        data = {key: request.form[key] for key in request.form}
+        query = """
+            UPDATE dependencia SET
+            idDependencia = ?, nombreDependencia = ?
+            WHERE idDependencia = ?
+        """
+        conn.execute(query, (*data.values(), idDependencia))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('dependencia'))
+ 
+    conn.close()
+    return render_template('edit_dependencia.html', procedimientos=procedimientos)
+ 
+# Ruta para eliminar un registro de dependencia
+@app.route('/delete_dependencia/<string:idDependencia>', methods=('POST',))
+def delete_dependencia(idDependencia):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM dependencia WHERE idDependencia = ?', (idDependencia,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('dependencia'))
 
 
 
