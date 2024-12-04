@@ -112,6 +112,35 @@ def create():
 @app.route('/edit/<string:idEje>', methods=('GET', 'POST'))
 def edit(idEje):
     conn = get_db_connection()
+# Ruta para listar los registros
+@app.route('/procedimientos')
+def procedimientos():
+    conn = get_db_connection()
+    procedimientos = conn.execute('SELECT * FROM Procedimientos').fetchall()
+    conn.close()
+    return render_template('procedimientos.html', procedimientos=procedimientos)
+
+# Ruta para crear un nuevo registro
+@app.route('/create', methods=('GET', 'POST'))
+def create():
+    if request.method == 'POST':
+        data = {key: request.form[key] for key in request.form}
+        conn = get_db_connection()
+        query = """
+            INSERT INTO Procedimientos (idEje, idArea, idDependencia, tipoProcedimiento, estado, teletrabajado,
+            idMacroproceso, idEjeEstrategico, tipoDocumento, nombreProcedimiento, apoyoTecnologico, anioActualizacion)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+        conn.execute(query, tuple(data.values()))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    return render_template('create.html')
+
+# Ruta para actualizar un registro
+@app.route('/edit/<string:idEje>', methods=('GET', 'POST'))
+def edit(idEje):
+    conn = get_db_connection()
     procedimiento = conn.execute('SELECT * FROM Procedimientos WHERE idEje = ?', (idEje,)).fetchone()
 
     if request.method == 'POST':
