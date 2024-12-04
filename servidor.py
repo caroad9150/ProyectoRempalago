@@ -83,17 +83,16 @@ def index():
     except Exception as e:
         return f"Error al conectar con la base de datos: {e}"
 
-# Ruta para listar los registros
+# Procedimientos
 @app.route('/procedimientos')
-def procedimientos():
+def listar_procedimientos():
     conn = get_db_connection()
     procedimientos = conn.execute('SELECT * FROM Procedimientos').fetchall()
     conn.close()
     return render_template('procedimientos.html', procedimientos=procedimientos)
 
-# Ruta para crear un nuevo registro
-@app.route('/create', methods=('GET', 'POST'))
-def create():
+@app.route('/create_procedimiento', methods=('GET', 'POST'))
+def create_procedimiento():
     if request.method == 'POST':
         data = {key: request.form[key] for key in request.form}
         conn = get_db_connection()
@@ -108,9 +107,8 @@ def create():
         return redirect(url_for('index'))
     return render_template('create.html')
 
-# Ruta para actualizar un registro
-@app.route('/edit/<string:idEje>', methods=('GET', 'POST'))
-def edit(idEje):
+@app.route('/edit_procedimiento/<string:idEje>', methods=('GET', 'POST'))
+def edit_procedimiento(idEje):
     conn = get_db_connection()
     procedimiento = conn.execute('SELECT * FROM Procedimientos WHERE idEje = ?', (idEje,)).fetchone()
 
@@ -131,25 +129,24 @@ def edit(idEje):
     conn.close()
     return render_template('edit.html', procedimiento=procedimiento)
 
-# Ruta para eliminar un registro
-@app.route('/delete/<string:idEje>', methods=('POST',))
-def delete(idEje):
+@app.route('/delete_procedimiento/<string:idEje>', methods=('POST',))
+def delete_procedimiento(idEje):
     conn = get_db_connection()
     conn.execute('DELETE FROM Procedimientos WHERE idEje = ?', (idEje,))
     conn.commit()
     conn.close()
     return redirect(url_for('index'))
 
-##areas
+# Áreas
 @app.route('/areas')
-def areas():
+def listar_areas():
     conn = get_db_connection()
     procedimientos = conn.execute('SELECT * FROM areas').fetchall()
     conn.close()
     return render_template('areas.html', procedimientos=procedimientos)
-# Ruta para crear un nuevo registro
+
 @app.route('/create_area', methods=('GET', 'POST'))
-def create():
+def create_area():
     if request.method == 'POST':
         data = {key: request.form[key] for key in request.form}
         conn = get_db_connection()
@@ -163,9 +160,8 @@ def create():
         return redirect(url_for('index'))
     return render_template('create.html')
 
-# Ruta para actualizar un registro
-@app.route('/edit/<string:idArea>', methods=('GET', 'POST'))
-def edit(idArea):
+@app.route('/edit_area/<string:idArea>', methods=('GET', 'POST'))
+def edit_area(idArea):
     conn = get_db_connection()
     procedimiento = conn.execute('SELECT * FROM area WHERE idArea = ?', (idArea,)).fetchone()
 
@@ -184,11 +180,10 @@ def edit(idArea):
     conn.close()
     return render_template('edit.html', procedimiento=procedimiento)
 
-# Ruta para eliminar un registro
-@app.route('/delete/<string:idEje>', methods=('POST',))
-def delete(idEje):
+@app.route('/delete_area/<string:idArea>', methods=('POST',))
+def delete_area(idArea):
     conn = get_db_connection()
-    conn.execute('DELETE FROM Procedimientos WHERE idEje = ?', (idEje,))
+    conn.execute('DELETE FROM area WHERE idArea = ?', (idArea,))
     conn.commit()
     conn.close()
     return redirect(url_for('index'))
