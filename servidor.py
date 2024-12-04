@@ -144,12 +144,12 @@ def delete(idEje):
 @app.route('/areas')
 def areas():
     conn = get_db_connection()
-    procedimientos = conn.execute('SELECT * FROM areas').fetchall()
+    procedimientos = conn.execute('SELECT * FROM area').fetchall()
     conn.close()
     return render_template('areas.html', procedimientos=procedimientos)
 # Ruta para crear un nuevo registro
 @app.route('/create_area', methods=('GET', 'POST'))
-def create():
+def create_area():
     if request.method == 'POST':
         data = {key: request.form[key] for key in request.form}
         conn = get_db_connection()
@@ -161,11 +161,11 @@ def create():
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
-    return render_template('create.html')
+    return render_template('create_area.html')
 
 # Ruta para actualizar un registro
-@app.route('/edit/<string:idArea>', methods=('GET', 'POST'))
-def edit(idArea):
+@app.route('/edit_area/<string:idArea>', methods=('GET', 'POST'))
+def edit_area(idArea):
     conn = get_db_connection()
     procedimiento = conn.execute('SELECT * FROM area WHERE idArea = ?', (idArea,)).fetchone()
 
@@ -182,13 +182,66 @@ def edit(idArea):
         return redirect(url_for('index'))
 
     conn.close()
-    return render_template('edit.html', procedimiento=procedimiento)
+    return render_template('edit_area.html', procedimiento=procedimiento)
 
 # Ruta para eliminar un registro
-@app.route('/delete/<string:idEje>', methods=('POST',))
-def delete(idEje):
+@app.route('/delete_area/<string:idArea>', methods=('POST',))
+def delete_area(idArea):
     conn = get_db_connection()
-    conn.execute('DELETE FROM Procedimientos WHERE idEje = ?', (idEje,))
+    conn.execute('DELETE FROM area WHERE idArea = ?', (idArea,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('index'))
+## macroprecesos
+
+@app.route('/macroprocesos')
+def macroprocesos():
+    conn = get_db_connection()
+    procedimientos = conn.execute('SELECT * FROM macroproceso').fetchall()
+    conn.close()
+    return render_template('macroprocesos.html', procedimientos=procedimientos)
+# Ruta para crear un nuevo registro
+@app.route('/create_macroprocesos', methods=('GET', 'POST'))
+def create_macroprocesos():
+    if request.method == 'POST':
+        data = {key: request.form[key] for key in request.form}
+        conn = get_db_connection()
+        query = """
+            INSERT INTO macroproceso (idMacroproceso, nombreMacroproceso)
+            VALUES (?, ?)
+        """
+        conn.execute(query, tuple(data.values()))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    return render_template('create_macroprocesos.html')
+
+# Ruta para actualizar un registro
+@app.route('/edit_macroprocesos/<string:idMacroproceso>', methods=('GET', 'POST'))
+def edit_macroprocesos(idMacroproceso):
+    conn = get_db_connection()
+    procedimiento = conn.execute('SELECT * FROM macroproceso WHERE idMacroproceso = ?', (idMacroproceso,)).fetchone()
+
+    if request.method == 'POST':
+        data = {key: request.form[key] for key in request.form}
+        query = """
+            UPDATE macroproceso SET 
+            idMacroproceso = ?, nombreMacroproceso = ?
+            WHERE idMacroproceso = ?
+        """
+        conn.execute(query, (*data.values(), idMacroproceso))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+
+    conn.close()
+    return render_template('edit_macroprocesos.html', procedimiento=procedimiento)
+
+# Ruta para eliminar un registro
+@app.route('/delete_macroprocesos/<string:idMacroproceso>', methods=('POST',))
+def delete_macroprocesos(idMacroproceso):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM macroproceso WHERE idMacroproceso = ?', (idMacroproceso,))
     conn.commit()
     conn.close()
     return redirect(url_for('index'))
