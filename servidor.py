@@ -83,7 +83,6 @@ def index():
     except Exception as e:
         return f"Error al conectar con la base de datos: {e}"
 
-<<<<<<< Updated upstream
 # Procedimientos
 @app.route('/procedimientos')
 def listar_procedimientos():
@@ -111,7 +110,6 @@ def create_procedimiento():
 @app.route('/edit_procedimiento/<string:idEje>', methods=('GET', 'POST'))
 def edit_procedimiento(idEje):
     conn = get_db_connection()
-=======
 # Ruta para listar los registros
 @app.route('/procedimientos')
 def procedimientos():
@@ -141,7 +139,6 @@ def create():
 @app.route('/edit/<string:idEje>', methods=('GET', 'POST'))
 def edit(idEje):
     conn = get_db_connection()
->>>>>>> Stashed changes
     procedimiento = conn.execute('SELECT * FROM Procedimientos WHERE idEje = ?', (idEje,)).fetchone()
 
     if request.method == 'POST':
@@ -161,21 +158,14 @@ def edit(idEje):
     conn.close()
     return render_template('edit.html', procedimiento=procedimiento)
 
-<<<<<<< Updated upstream
 @app.route('/delete_procedimiento/<string:idEje>', methods=('POST',))
 def delete_procedimiento(idEje):
-=======
-# Ruta para eliminar un registro
-@app.route('/delete/<string:idEje>', methods=('POST',))
-def delete(idEje):
->>>>>>> Stashed changes
     conn = get_db_connection()
     conn.execute('DELETE FROM Procedimientos WHERE idEje = ?', (idEje,))
     conn.commit()
     conn.close()
     return redirect(url_for('index'))
 
-<<<<<<< Updated upstream
 # Áreas
 @app.route('/areas')
 def listar_areas():
@@ -218,8 +208,6 @@ def edit_area(idArea):
 
     conn.close()
     return render_template('edit.html', procedimiento=procedimiento)
-=======
->>>>>>> Stashed changes
 
 @app.route('/delete_area/<string:idArea>', methods=('POST',))
 def delete_area(idArea):
