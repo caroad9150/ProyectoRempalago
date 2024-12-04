@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Ejes Estratégicos</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+<h1 class="text-center mb-4">Lista de Ejes Estratégicos</h1>
+<a href="/create_eje_estrategico" class="btn btn-success mb-3">Crear Nuevo Eje Estratégico</a>
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<th>idEje</th>
+<th>Nombre Eje Estratégico</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody>
+        {% for eje in eje_estrategicos %}
+<tr>
+<td>{{ eje['idEje'] }}</td>
+<td>{{ eje['nombreEjeEstrategico'] }}</td>
+<td>
+<a href="/edit_eje_estrategico/{{ eje['idEje'] }}" class="btn btn-primary btn-sm">Editar</a>
+<form action="/delete_eje_estrategico/{{ eje['idEje'] }}" method="post" style="display:inline;">
+<button class="btn btn-danger btn-sm">Eliminar</button>
+</form>
+</td>
+</tr>
+        {% endfor %}
+</tbody>
+</table>
+</div>
+</body>
+</html>
