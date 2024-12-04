@@ -140,7 +140,58 @@ def delete(idEje):
     conn.close()
     return redirect(url_for('index'))
 
+##areas
+@app.route('/areas')
+def areas():
+    conn = get_db_connection()
+    procedimientos = conn.execute('SELECT * FROM areas').fetchall()
+    conn.close()
+    return render_template('areas.html', procedimientos=procedimientos)
+# Ruta para crear un nuevo registro
+@app.route('/create_area', methods=('GET', 'POST'))
+def create():
+    if request.method == 'POST':
+        data = {key: request.form[key] for key in request.form}
+        conn = get_db_connection()
+        query = """
+            INSERT INTO area (idArea, nombreArea)
+            VALUES (?, ?)
+        """
+        conn.execute(query, tuple(data.values()))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    return render_template('create.html')
 
+# Ruta para actualizar un registro
+@app.route('/edit/<string:idArea>', methods=('GET', 'POST'))
+def edit(idArea):
+    conn = get_db_connection()
+    procedimiento = conn.execute('SELECT * FROM area WHERE idArea = ?', (idArea,)).fetchone()
+
+    if request.method == 'POST':
+        data = {key: request.form[key] for key in request.form}
+        query = """
+            UPDATE area SET 
+            idArea = ?, nombreArea = ?
+            WHERE idArea = ?
+        """
+        conn.execute(query, (*data.values(), idArea))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+
+    conn.close()
+    return render_template('edit.html', procedimiento=procedimiento)
+
+# Ruta para eliminar un registro
+@app.route('/delete/<string:idEje>', methods=('POST',))
+def delete(idEje):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM Procedimientos WHERE idEje = ?', (idEje,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
