@@ -16,7 +16,7 @@
            
             <th>idDependencia</th>
             <th>nombreDependencia</th>
-           
+           <th>Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -27,8 +27,8 @@
             <td>{{ proc['nombreDependencia'] }}</td>
            
             <td>
-                <a href="/edit/{{ proc['idEje'] }}" class="btn btn-primary btn-sm">Editar</a>
-                <form action="/delete/{{ proc['idEje'] }}" method="post" style="display:inline;">
+                <a href="/edit_dependencia/{{ proc['idEje'] }}" class="btn btn-primary btn-sm">Editar</a>
+                <form action="/delete_dependencia/{{ proc['idEje'] }}" method="post" style="display:inline;">
                     <button class="btn btn-danger btn-sm">Eliminar</button>
                 </form>
             </td>

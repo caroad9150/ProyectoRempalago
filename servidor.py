@@ -4,53 +4,23 @@ import json  # Para serializar distribuciones correctamente
 
 app = Flask(__name__)
 
-# DATABASE_CONFIG = {
-#     'driver': '{ODBC Driver 17 for SQL Server}',
-#     'server': 'tiusr3pl.cuc-carrera-ti.ac.cr',
-#     'database': 'proyetoR',
-#     'username': 'sitios',
-#     'password': 'SitiosC32024'
-# }
+DATABASE_CONFIG = {
+    'driver': '{ODBC Driver 17 for SQL Server}',
+    'server': 'tiusr3pl.cuc-carrera-ti.ac.cr',
+    'database': 'proyetoR',
+    'username': 'sitios',
+    'password': 'SitiosC32024'
+}
 
-# def get_db_connection():
-#     connection_string = (
-#         f"DRIVER={DATABASE_CONFIG['driver']};"
-#         f"SERVER={DATABASE_CONFIG['server']};"
-#         f"DATABASE={DATABASE_CONFIG['database']};"
-#         f"UID={DATABASE_CONFIG['username']};"
-#         f"PWD={DATABASE_CONFIG['password']};"
-#         f"Timeout=30;"
-#     )
-#     return pyodbc.connect(connection_string)
-
-##local 
-def get_db_connection(config):
-    """
-    Genera una conexión a la base de datos basada en la configuración proporcionada.
-
-    :param config: Diccionario con la configuración de la base de datos.
-    :return: Conexión a la base de datos.
-    """
-    if config['username'] and config['password']:
-        # Con credenciales
-        connection_string = (
-            f"DRIVER={config['driver']};"
-            f"SERVER={config['server']};"
-            f"DATABASE={config['database']};"
-            f"UID={config['username']};"
-            f"PWD={config['password']};"
-            f"Timeout=30;"
-        )
-    else:
-        # Con Trusted_Connection
-        connection_string = (
-            f"DRIVER={config['driver']};"
-            f"SERVER={config['server']};"
-            f"DATABASE={config['database']};"
-            f"Trusted_Connection=yes;"
-            f"Timeout=30;"
-        )
-    
+def get_db_connection():
+    connection_string = (
+        f"DRIVER={DATABASE_CONFIG['driver']};"
+        f"SERVER={DATABASE_CONFIG['server']};"
+        f"DATABASE={DATABASE_CONFIG['database']};"
+        f"UID={DATABASE_CONFIG['username']};"
+        f"PWD={DATABASE_CONFIG['password']};"
+        f"Timeout=30;"
+    )
     return pyodbc.connect(connection_string)
 
 
@@ -338,9 +308,9 @@ def delete_eje_estrategico(idEje):
 @app.route('/dependencia')
 def dependencia():
     conn = get_db_connection()
-    dependencias = conn.execute('SELECT * FROM dependencia').fetchall()
+    procedimientos = conn.execute('SELECT * FROM dependencia').fetchall()
     conn.close()
-    return render_template('dependencia.html', procedimientos=procedimientos)
+    return render_template('dependencias.html', procedimientos=procedimientos)
  
 # Ruta para crear un nuevo registro en dependencia
 @app.route('/create_dependencia', methods=('GET', 'POST'))
